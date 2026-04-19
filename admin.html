@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Panel — Entropy Tools</title>
+<link rel="stylesheet" href="/css/main.css" />
+<link rel="stylesheet" href="/css/animations.css" />
+<style>
+.admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 32px; }
+.admin-stat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 22px;
+  position: relative;
+  overflow: hidden;
+}
+.admin-stat::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--gold);
+}
+.admin-stat-icon { font-size: 1.3rem; margin-bottom: 10px; }
+.admin-stat-val { font-family: var(--font-display); font-size: 1.6rem; font-weight: 900; color: var(--gold); line-height: 1; }
+.admin-stat-lbl { font-family: var(--font-mono); font-size: .6rem; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 6px; }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.price-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--gold-dim);
+  border: 1px solid rgba(245,166,35,.25);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: var(--font-display);
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+</style>
+</head>
+<body>
+<div id="page-loader">
+  <div class="loader-logo">⚡ ENTROPY TOOLS</div>
+  <div class="loader">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </div>
+  <div class="loader-text">loading admin panel...</div>
+</div>
+  <div class="loader-text">loading admin panel...</div>
+</div>
+<div class="grid-bg"></div>
+
+<nav class="navbar">
+  <a href="/index.html" class="nav-logo"><div class="logo-icon">⚡</div>ENTROPY TOOLS</a>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span class="badge badge-gold">⚙️ Admin Panel</span>
+  </div>
+  <div class="nav-right">
+    <a href="/dashboard.html" class="btn btn-ghost btn-sm"><span class="blob1"></span><span class="inner">User View</span></a>
+    <button class="btn btn-danger btn-sm" onclick="ET.auth.logout()"><span class="blob1"></span><span class="inner">Sign Out</span></button>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section" style="margin-bottom:20px;padding:0 12px 16px;border-bottom:1px solid var(--border)">
+        <div style="font-family:var(--font-display);font-size:.75rem;font-weight:700;color:var(--gold)">⚙️ Administrator</div>
+        <div style="font-family:var(--font-mono);font-size:.62rem;color:var(--text3);margin-top:4px" id="admin-email"></div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Management</div>
+        <button class="sidebar-link active" id="nav-overview" onclick="showTab('overview',this)"><span class="icon">📊</span> Overview</button>
+        <button class="sidebar-link" id="nav-services" onclick="showTab('services',this)"><span class="icon">⚡</span> Services & Pricing</button>
+        <button class="sidebar-link" id="nav-users" onclick="showTab('users',this)"><span class="icon">👥</span> Users</button>
+        <button class="sidebar-link" id="nav-transactions" onclick="showTab('transactions',this)"><span class="icon">💳</span> Transactions</button>
+        <button class="sidebar-link" id="nav-generations" onclick="showTab('generations',this)"><span class="icon">🔗</span> Generations</button>
+      </div>
+      <div class="sidebar-section" style="margin-top:16px">
+        <div class="sidebar-label">Quick Actions</div>
+        <a href="/index.html" class="sidebar-link"><span class="icon">🌐</span> View Site</a>
+        <button class="sidebar-link" onclick="ET.auth.logout()"><span class="icon">🚪</span> Sign Out</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- ── TAB: OVERVIEW ── -->
+      <div class="tab-content active" id="tab-overview">
+        <div style="margin-bottom:28px">
+          <h1 style="font-family:var(--font-display);font-size:1.6rem;font-weight:900;letter-spacing:-1px">Admin <span style="color:var(--gold)">Overview</span></h1>
+          <p style="color:var(--text3);font-family:var(--font-mono);font-size:.7rem;margin-top:4px">// platform_statistics</p>
+        </div>
+
+        <div class="admin-stats">
+          <div class="admin-stat fade-up">
+            <div class="admin-stat-icon">👥</div>
+            <div class="admin-stat-val" id="stat-users">0</div>
+            <div class="admin-stat-lbl">Total Users</div>
+          </div>
+          <div class="admin-stat fade-up">
+            <div class="admin-stat-icon">💰</div>
+            <div class="admin-stat-val" id="stat-revenue">₦0</div>
+            <div class="admin-stat-lbl">Revenue</div>
+          </div>
+          <div class="admin-stat fade-up">
+            <div class="admin-stat-icon">💳</div>
+            <div class="admin-stat-val" id="stat-deposits">₦0</div>
+            <div class="admin-stat-lbl">Total Deposits</div>
+          </div>
+          <div class="admin-stat fade-up">
+            <div class="admin-stat-icon">⚡</div>
+            <div class="admin-stat-val" id="stat-gens">0</div>
+            <div class="admin-stat-lbl">Generations</div>
+          </div>
+          <div class="admin-stat fade-up">
+            <div class="admin-stat-icon">✅</div>
+            <div class="admin-stat-val" id="stat-active">0</div>
+            <div class="admin-stat-lbl">Active Users</div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card" style="margin-bottom:20px">
+          <div class="section-head">
+            <div class="section-title">Recent <span class="accent">Transactions</span></div>
+            <button class="btn btn-ghost btn-sm" onclick="showTab('transactions',document.getElementById('nav-transactions'))"><span class="blob1"></span><span class="inner">View All</span></button>
+          </div>
+          <div class="table-wrap" style="border:none;border-radius:0">
+            <table class="data-table">
+              <thead><tr><th>Ref</th><th>User</th><th>Type</th><th>Amount</th><th>Date</th></tr></thead>
+              <tbody id="overview-tx-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB: SERVICES ── -->
+      <div class="tab-content" id="tab-services">
+        <div style="margin-bottom:28px;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <h1 style="font-family:var(--font-display);font-size:1.6rem;font-weight:900;letter-spacing:-1px">Services & <span style="color:var(--gold)">Pricing</span></h1>
+            <p style="color:var(--text3);font-family:var(--font-mono);font-size:.7rem;margin-top:4px">// manage_services · edit prices · enable/disable</p>
+          </div>
+        </div>
+        <div class="alert alert-warn" style="margin-bottom:20px;font-size:.82rem">
+          ⚠️ Price changes take effect immediately for all users.
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Service</th><th>Category</th><th>Price / Use</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="admin-services-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── TAB: USERS ── -->
+      <div class="tab-content" id="tab-users">
+        <div style="margin-bottom:28px">
+          <h1 style="font-family:var(--font-display);font-size:1.6rem;font-weight:900;letter-spacing:-1px">User <span style="color:var(--gold)">Management</span></h1>
+          <p style="color:var(--text3);font-family:var(--font-mono);font-size:.7rem;margin-top:4px">// all_registered_users</p>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Name / ID</th><th>Email</th><th>Balance</th><th>Deposited</th><th>Uses</th><th>Joined</th></tr></thead>
+            <tbody id="admin-users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── TAB: TRANSACTIONS ── -->
+      <div class="tab-content" id="tab-transactions">
+        <div style="margin-bottom:28px">
+          <h1 style="font-family:var(--font-display);font-size:1.6rem;font-weight:900;letter-spacing:-1px">All <span style="color:var(--gold)">Transactions</span></h1>
+          <p style="color:var(--text3);font-family:var(--font-mono);font-size:.7rem;margin-top:4px">// platform_transaction_ledger</p>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Reference</th><th>User</th><th>Type</th><th>Amount</th><th>Date</th></tr></thead>
+            <tbody id="admin-tx-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── TAB: GENERATIONS ── -->
+      <div class="tab-content" id="tab-generations">
+        <div style="margin-bottom:28px">
+          <h1 style="font-family:var(--font-display);font-size:1.6rem;font-weight:900;letter-spacing:-1px">All <span style="color:var(--gold)">Generations</span></h1>
+          <p style="color:var(--text3);font-family:var(--font-mono);font-size:.7rem;margin-top:4px">// all_tool_generations with view & download</p>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>ID</th><th>Service</th><th>User</th><th>Cost</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="admin-gen-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/services.js"></script>
+<script src="/js/admin.js"></script>
+<script>
+// ── ADMIN INIT ──
+if (!ET.ui.requireAuth(true)) { /* redirects non-admins */ }
+
+const adminUser = ET.auth.current();
+document.getElementById('admin-email').textContent = adminUser.email;
+
+Admin.init();
+
+// Populate overview transactions
+(function() {
+  const txns = ET.transactions.all().slice(0, 8);
+  const tbody = document.getElementById('overview-tx-tbody');
+  if (!txns.length) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text3);font-family:var(--font-mono)">No transactions yet</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = txns.map(t => {
+    const user = ET.auth.getUser(t.userId);
+    return `<tr>
+      <td style="font-family:var(--font-mono);font-size:.68rem;color:var(--text3)">${(t.ref||t.id).slice(0,20)}...</td>
+      <td>${user ? user.name : t.userId}</td>
+      <td><span class="badge ${t.type==='credit'?'badge-green':'badge-red'}">${t.type}</span></td>
+      <td><span style="color:${t.type==='credit'?'var(--green)':'var(--red)'};font-family:var(--font-display);font-weight:700">${t.type==='credit'?'+':'-'}${ET.ui.formatMoney(t.amount)}</span></td>
+      <td style="font-size:.78rem;color:var(--text3)">${ET.ui.formatDateTime(t.date)}</td>
+    </tr>`;
+  }).join('');
+})();
+
+// Populate generations
+(function() {
+  const gens = ET.generations.all().slice(0, 50);
+  const tbody = document.getElementById('admin-gen-tbody');
+  if (!gens.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text3);font-family:var(--font-mono)">No generations yet</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = gens.map(g => {
+    const user = ET.auth.getUser(g.userId);
+    return `<tr>
+      <td style="font-family:var(--font-mono);font-size:.68rem;color:var(--text3)">${g.id}</td>
+      <td>${g.serviceName}</td>
+      <td>${user ? user.name : g.userId}</td>
+      <td style="color:var(--red);font-family:var(--font-display);font-weight:600">-₦${(g.price||0).toLocaleString()}</td>
+      <td style="font-size:.78rem;color:var(--text3)">${ET.ui.formatDateTime(g.date)}</td>
+      <td>
+        <div style="display:flex;gap:6px">
+          <a href="${g.viewLink}" target="_blank" class="btn btn-ghost btn-sm"><span class="blob1"></span><span class="inner">👁 View</span></a>
+          <button class="btn btn-outline btn-sm" onclick="ServicesHandler.downloadGen('${g.id}')"><span class="blob1"></span><span class="inner">↓</span></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+})();
+
+// Tab switching
+function showTab(tab, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>

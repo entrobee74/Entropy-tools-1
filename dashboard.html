@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard — Entropy Tools</title>
+<link rel="stylesheet" href="/css/main.css" />
+<link rel="stylesheet" href="/css/animations.css" />
+<style>
+.balance-hero {
+  background: linear-gradient(135deg, var(--card) 0%, var(--card2) 100%);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.balance-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.balance-hero .scan-line { opacity: .3; }
+.balance-label { font-family: var(--font-mono); font-size: .62rem; color: var(--text3); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+.balance-amount { font-family: var(--font-display); font-size: 3rem; font-weight: 900; color: var(--gold); line-height: 1; margin-bottom: 20px; }
+.balance-meta { display: flex; gap: 28px; flex-wrap: wrap; }
+.balance-meta-item { display: flex; flex-direction: column; gap: 4px; }
+.bmeta-label { font-family: var(--font-mono); font-size: .6rem; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
+.bmeta-value { font-family: var(--font-display); font-size: .95rem; font-weight: 700; }
+.balance-actions {
+  position: absolute;
+  top: 32px; right: 32px;
+  display: flex;
+  gap: 10px;
+}
+
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 32px; }
+
+.recent-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 900px) { .recent-section { grid-template-columns: 1fr; } .balance-actions { position: static; margin-top: 20px; } }
+
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text3); font-family: var(--font-mono); font-size: .75rem; }
+.empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; }
+
+.tx-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.tx-row:last-child { border-bottom: none; }
+.tx-left { display: flex; align-items: center; gap: 10px; }
+.tx-icon-wrap { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+.tx-name { font-size: .85rem; font-weight: 500; }
+.tx-date { font-family: var(--font-mono); font-size: .65rem; color: var(--text3); margin-top: 2px; }
+.tx-amount { font-family: var(--font-display); font-weight: 700; font-size: .95rem; }
+.credit { color: var(--green); }
+.debit  { color: var(--red); }
+</style>
+</head>
+<body>
+<div id="page-loader">
+  <div class="loader-logo">⚡ ENTROPY TOOLS</div>
+  <div class="loader">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </div>
+  <div class="loader-text">loading dashboard...</div>
+</div>
+  <div class="loader-text">loading dashboard...</div>
+</div>
+
+<div class="grid-bg"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="/index.html" class="nav-logo"><div class="logo-icon">⚡</div>ENTROPY TOOLS</a>
+  <ul class="nav-links">
+    <li><a href="/dashboard.html" class="active">Dashboard</a></li>
+    <li><a href="/services.html">Services</a></li>
+    <li><a href="/deposit.html">Deposit</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="balance-pill" onclick="window.location.href='/deposit.html'">
+      <div class="pulse"></div>
+      <span id="nav-balance-val">₦0.00</span>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="ET.auth.logout()"><span class="blob1"></span><span class="inner">Sign Out</span></button>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section" style="margin-bottom:20px">
+        <div style="padding:0 12px 16px;border-bottom:1px solid var(--border)">
+          <div style="font-family:var(--font-display);font-size:.75rem;font-weight:700;color:var(--text)" id="sidebar-name">Loading...</div>
+          <div style="font-family:var(--font-mono);font-size:.62rem;color:var(--text3);margin-top:2px" id="sidebar-email"></div>
+          <div style="margin-top:8px"><span class="badge badge-cyan">User</span></div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Navigation</div>
+        <a href="/dashboard.html" class="sidebar-link active"><span class="icon">🏠</span> Dashboard</a>
+        <a href="/services.html" class="sidebar-link"><span class="icon">⚡</span> Services</a>
+        <a href="/deposit.html" class="sidebar-link"><span class="icon">💳</span> Deposit</a>
+      </div>
+      <div class="sidebar-section" style="margin-top:16px">
+        <div class="sidebar-label">Account</div>
+        <button class="sidebar-link" onclick="ET.auth.logout()"><span class="icon">🚪</span> Sign Out</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <!-- BALANCE HERO -->
+      <div class="balance-hero">
+        <div class="scan-line"></div>
+        <div class="balance-label">Available Balance</div>
+        <div class="balance-amount" id="dash-balance">₦0.00</div>
+        <div class="balance-meta">
+          <div class="balance-meta-item">
+            <div class="bmeta-label">Total Deposited</div>
+            <div class="bmeta-value" id="dash-deposited">₦0.00</div>
+          </div>
+          <div class="balance-meta-item">
+            <div class="bmeta-label">Total Spent</div>
+            <div class="bmeta-value" id="dash-spent">₦0.00</div>
+          </div>
+          <div class="balance-meta-item">
+            <div class="bmeta-label">Tool Uses</div>
+            <div class="bmeta-value" id="dash-uses">0</div>
+          </div>
+        </div>
+        <div class="balance-actions">
+          <a href="/deposit.html" class="btn btn-gold"><span class="blob1"></span><span class="inner">+ Deposit</span></a>
+          <a href="/services.html" class="btn btn-outline"><span class="blob1"></span><span class="inner">Tools →</span></a>
+        </div>
+      </div>
+
+      <!-- STATS ROW -->
+      <div class="stats-row">
+        <div class="stat-card fade-up">
+          <div class="stat-label">Generations</div>
+          <div class="stat-value" id="stat-gens">0</div>
+          <div class="stat-change">all time</div>
+        </div>
+        <div class="stat-card fade-up">
+          <div class="stat-label">Credits Used</div>
+          <div class="stat-value" id="stat-spent-small">₦0</div>
+          <div class="stat-change">total spending</div>
+        </div>
+        <div class="stat-card fade-up">
+          <div class="stat-label">Services</div>
+          <div class="stat-value" id="stat-services">0</div>
+          <div class="stat-change">available to use</div>
+        </div>
+        <div class="stat-card fade-up">
+          <div class="stat-label">Status</div>
+          <div class="stat-value" style="font-size:1rem;display:flex;align-items:center;gap:8px;padding-top:6px">
+            <span class="glow-dot"></span>Active
+          </div>
+          <div class="stat-change">account standing</div>
+        </div>
+      </div>
+
+      <!-- RECENT SECTIONS -->
+      <div class="recent-section">
+        <!-- RECENT TRANSACTIONS -->
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">Recent <span class="accent">Transactions</span></div>
+              <div class="section-sub">// wallet_history</div>
+            </div>
+            <a href="/deposit.html" class="btn btn-ghost btn-sm"><span class="blob1"></span><span class="inner">+ Deposit</span></a>
+          </div>
+          <div id="tx-list-dash">
+            <div class="empty-state"><div class="icon">💳</div>No transactions yet<br><a href="/deposit.html" class="btn btn-gold btn-sm" style="margin-top:14px"><span class="blob1"></span><span class="inner">Fund Wallet</span></a></div>
+          </div>
+        </div>
+
+        <!-- RECENT GENERATIONS -->
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">Recent <span class="accent">Generations</span></div>
+              <div class="section-sub">// generation_log</div>
+            </div>
+            <a href="/services.html" class="btn btn-ghost btn-sm"><span class="blob1"></span><span class="inner">All Tools →</span></a>
+          </div>
+          <div id="gen-list-dash">
+            <div class="empty-state"><div class="icon">⚡</div>No generations yet<br><a href="/services.html" class="btn btn-gold btn-sm" style="margin-top:14px"><span class="blob1"></span><span class="inner">Use a Tool</span></a></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK SERVICES -->
+      <div style="margin-top:28px">
+        <div class="section-head">
+          <div>
+            <div class="section-title">Quick <span class="accent">Services</span></div>
+            <div class="section-sub">// available_tools</div>
+          </div>
+          <a href="/services.html" class="btn btn-ghost btn-sm"><span class="blob1"></span><span class="inner">View All →</span></a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px" id="quick-services">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/services.js"></script>
+<script>
+// ── DASHBOARD INIT ──
+if (!ET.ui.requireAuth()) { /* redirects */ }
+
+const user = ET.auth.current();
+
+// Fill sidebar
+document.getElementById('sidebar-name').textContent  = user.name;
+document.getElementById('sidebar-email').textContent = user.email;
+
+// Fill balance hero
+document.getElementById('dash-balance').textContent   = ET.ui.formatMoney(user.balance || 0);
+document.getElementById('dash-deposited').textContent = ET.ui.formatMoney(user.totalDeposited || 0);
+document.getElementById('dash-spent').textContent     = ET.ui.formatMoney(user.totalSpent || 0);
+document.getElementById('dash-uses').textContent      = user.uses || 0;
+
+// Stats
+const gens = ET.generations.forUser(user.id);
+document.getElementById('stat-gens').textContent        = gens.length;
+document.getElementById('stat-spent-small').textContent = ET.ui.formatMoney(user.totalSpent || 0);
+document.getElementById('stat-services').textContent    = ET.services.active().length;
+
+// Transactions
+const txns = ET.transactions.forUser(user.id).slice(0, 5);
+if (txns.length) {
+  document.getElementById('tx-list-dash').innerHTML = txns.map(t => `
+    <div class="tx-row">
+      <div class="tx-left">
+        <div class="tx-icon-wrap" style="background:${t.type==='credit'?'var(--green-dim)':'rgba(255,61,61,.1)'}">${t.icon}</div>
+        <div>
+          <div class="tx-name">${t.note || t.type}</div>
+          <div class="tx-date">${ET.ui.formatDate(t.date)}</div>
+        </div>
+      </div>
+      <div class="tx-amount ${t.type}">${t.type==='credit'?'+':'-'}${ET.ui.formatMoney(t.amount)}</div>
+    </div>`).join('');
+}
+
+// Recent generations
+const recentGens = gens.slice(0, 4);
+if (recentGens.length) {
+  document.getElementById('gen-list-dash').innerHTML = recentGens.map(g => `
+    <div class="tx-row">
+      <div class="tx-left">
+        <div class="tx-icon-wrap" style="background:var(--gold-dim)">⚡</div>
+        <div>
+          <div class="tx-name">${g.serviceName}</div>
+          <div class="tx-date">${ET.ui.formatDate(g.date)}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <a href="${g.viewLink}" target="_blank" class="btn btn-ghost btn-sm"><span class="blob1"></span><span class="inner">View</span></a>
+        <button class="btn btn-outline btn-sm" onclick="ServicesHandler.downloadGen('${g.id}')"><span class="blob1"></span><span class="inner">↓</span></button>
+      </div>
+    </div>`).join('');
+}
+
+// Quick services
+const svcs = ET.services.active().slice(0, 3);
+document.getElementById('quick-services').innerHTML = svcs.map(s => `
+  <div class="card card-glow hover-glow fade-up" style="cursor:pointer" onclick="ServicesHandler.launch('${s.id}')">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:44px;height:44px;background:var(--gold-dim);border:1px solid rgba(245,166,35,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">${s.icon}</div>
+      <div style="flex:1">
+        <div style="font-family:var(--font-display);font-weight:700;font-size:.82rem;letter-spacing:1px">${s.name}</div>
+        <div style="font-family:var(--font-display);color:var(--gold);font-weight:700;font-size:.9rem;margin-top:2px">₦${s.price.toLocaleString()}</div>
+      </div>
+      <span class="btn btn-gold btn-sm">→</span>
+    </div>
+  </div>`).join('');
+</script>
+</body>
+</html>

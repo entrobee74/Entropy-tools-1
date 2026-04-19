@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deposit — Entropy Tools</title>
+<link rel="stylesheet" href="/css/main.css" />
+<link rel="stylesheet" href="/css/animations.css" />
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<style>
+.deposit-layout { display: grid; grid-template-columns: 1fr 360px; gap: 24px; }
+@media(max-width:900px){ .deposit-layout{grid-template-columns:1fr;} }
+
+.deposit-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; }
+
+.amount-presets { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
+.preset-btn {
+  background: var(--card2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--text2);
+  transition: all .2s;
+  letter-spacing: .5px;
+}
+.preset-btn:hover, .preset-btn.active {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: var(--gold-dim);
+}
+.preset-btn .lbl { font-family: var(--font-mono); font-size: .58rem; color: var(--text3); margin-top: 3px; }
+
+.balance-card {
+  background: linear-gradient(135deg, var(--card) 0%, var(--card2) 100%);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.balance-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.tx-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--border); }
+.tx-row:last-child { border-bottom: none; }
+.tx-left { display: flex; align-items: center; gap: 10px; }
+.tx-icon-wrap { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .95rem; flex-shrink: 0; }
+.tx-name { font-size: .85rem; font-weight: 500; }
+.tx-date { font-family: var(--font-mono); font-size: .62rem; color: var(--text3); margin-top: 1px; }
+.tx-amount { font-family: var(--font-display); font-weight: 700; font-size: .9rem; }
+.credit { color: var(--green); }
+.debit  { color: var(--red); }
+
+.empty-state { text-align: center; padding: 30px 20px; color: var(--text3); font-family: var(--font-mono); font-size: .72rem; }
+</style>
+</head>
+<body>
+<div id="page-loader">
+  <div class="loader-logo">⚡ ENTROPY TOOLS</div>
+  <div class="loader">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </div>
+  <div class="loader-text">loading wallet...</div>
+</div>
+  <div class="loader-text">loading wallet...</div>
+</div>
+<div class="grid-bg"></div>
+
+<nav class="navbar">
+  <a href="/index.html" class="nav-logo"><div class="logo-icon">⚡</div>ENTROPY TOOLS</a>
+  <ul class="nav-links">
+    <li><a href="/dashboard.html">Dashboard</a></li>
+    <li><a href="/services.html">Services</a></li>
+    <li><a href="/deposit.html" class="active">Deposit</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="balance-pill">
+      <div class="pulse"></div>
+      <span id="nav-balance-val">₦0.00</span>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="ET.auth.logout()"><span class="blob1"></span><span class="inner">Sign Out</span></button>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section" style="margin-bottom:20px">
+        <div style="padding:0 12px 16px;border-bottom:1px solid var(--border)">
+          <div style="font-family:var(--font-display);font-size:.75rem;font-weight:700;color:var(--text)" id="sidebar-name"></div>
+          <div style="font-family:var(--font-mono);font-size:.62rem;color:var(--text3);margin-top:2px" id="sidebar-email"></div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Navigation</div>
+        <a href="/dashboard.html" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+        <a href="/services.html" class="sidebar-link"><span class="icon">⚡</span> Services</a>
+        <a href="/deposit.html" class="sidebar-link active"><span class="icon">💳</span> Deposit</a>
+      </div>
+      <div class="sidebar-section" style="margin-top:16px">
+        <div class="sidebar-label">Account</div>
+        <button class="sidebar-link" onclick="ET.auth.logout()"><span class="icon">🚪</span> Sign Out</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <div style="margin-bottom:32px">
+        <h1 style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;letter-spacing:-1px">Fund <span style="color:var(--gold)">Wallet</span></h1>
+        <p style="color:var(--text3);font-family:var(--font-mono);font-size:.72rem;margin-top:6px">// secure deposit via paystack</p>
+      </div>
+
+      <div class="deposit-layout">
+        <!-- LEFT: Deposit form -->
+        <div>
+          <div class="deposit-card" style="margin-bottom:24px">
+            <div class="section-head" style="margin-bottom:24px">
+              <div>
+                <div class="section-title">Make a <span class="accent">Deposit</span></div>
+                <div class="section-sub">Minimum deposit: ₦100</div>
+              </div>
+            </div>
+
+            <!-- Balance display -->
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-family:var(--font-mono);font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Current Balance</div>
+                <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:900;color:var(--gold)" id="current-balance">₦0.00</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-family:var(--font-mono);font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Total Deposited</div>
+                <div style="font-family:var(--font-display);font-size:.95rem;font-weight:700" id="total-deposited-display">₦0.00</div>
+              </div>
+            </div>
+
+            <!-- Quick amounts -->
+            <div style="margin-bottom:20px">
+              <label class="form-label" style="margin-bottom:10px;display:block">Quick Select</label>
+              <div class="amount-presets">
+                <div class="preset-btn" onclick="setPreset(500,this)">₦500<div class="lbl">starter</div></div>
+                <div class="preset-btn" onclick="setPreset(1000,this)">₦1K<div class="lbl">popular</div></div>
+                <div class="preset-btn" onclick="setPreset(2000,this)">₦2K<div class="lbl">value</div></div>
+                <div class="preset-btn" onclick="setPreset(5000,this)">₦5K<div class="lbl">power</div></div>
+              </div>
+            </div>
+
+            <!-- Custom amount -->
+            <div class="form-stack" style="display:flex;flex-direction:column;gap:16px">
+              <div class="form-group">
+                <label class="form-label">Custom Amount (₦)</label>
+                <div class="input-group">
+                  <span class="input-prefix">₦</span>
+                  <input class="form-input" type="number" id="deposit-amount" placeholder="Enter amount" min="100" />
+                </div>
+              </div>
+              <div class="alert alert-info" style="font-size:.78rem">
+                <span>ℹ️</span>
+                <span>Funds are credited to your wallet instantly after successful payment.</span>
+              </div>
+              <button class="btn btn-gold btn-full btn-lg" id="pay-btn" onclick="doPay()"><span class="blob1"></span><span class="inner">Pay with Paystack →</span></button>
+              <div style="text-align:center;font-family:var(--font-mono);font-size:.62rem;color:var(--text3)">
+                🔒 Secured by Paystack · Bank-grade encryption
+              </div>
+            </div>
+          </div>
+
+          <!-- Service costs reference -->
+          <div class="deposit-card">
+            <div class="section-title" style="margin-bottom:16px">Service <span class="accent">Costs</span></div>
+            <div id="service-costs">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Balance & history -->
+        <div>
+          <div class="balance-card" style="margin-bottom:16px">
+            <div class="scan-line"></div>
+            <div style="font-family:var(--font-mono);font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">Wallet Balance</div>
+            <div style="font-family:var(--font-display);font-size:2.4rem;font-weight:900;color:var(--gold);margin-bottom:20px" id="big-balance">₦0.00</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;justify-content:space-between;font-size:.82rem">
+                <span style="color:var(--text3)">Deposited</span>
+                <span style="color:var(--text);font-family:var(--font-display);font-weight:600" id="tot-dep">₦0</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:.82rem">
+                <span style="color:var(--text3)">Spent</span>
+                <span style="color:var(--red);font-family:var(--font-display);font-weight:600" id="tot-spent">₦0</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:.82rem">
+                <span style="color:var(--text3)">Generations</span>
+                <span style="color:var(--text);font-family:var(--font-display);font-weight:600" id="tot-gens">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Transaction history -->
+          <div class="deposit-card">
+            <div class="section-title" style="margin-bottom:16px">Transaction <span class="accent">History</span></div>
+            <div id="tx-history">
+              <div class="empty-state">No transactions yet</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/paystack.js"></script>
+<script>
+if (!ET.ui.requireAuth()) { /* redirect */ }
+
+const user = ET.auth.current();
+document.getElementById('sidebar-name').textContent  = user.name;
+document.getElementById('sidebar-email').textContent = user.email;
+
+function refreshBalances() {
+  const u = ET.auth.current();
+  const bal = ET.ui.formatMoney(u.balance || 0);
+  document.getElementById('current-balance').textContent = bal;
+  document.getElementById('big-balance').textContent     = bal;
+  document.getElementById('nav-balance-val').textContent = bal;
+  document.getElementById('tot-dep').textContent   = ET.ui.formatMoney(u.totalDeposited || 0);
+  document.getElementById('tot-spent').textContent = ET.ui.formatMoney(u.totalSpent || 0);
+  document.getElementById('tot-gens').textContent  = ET.generations.forUser(u.id).length;
+  document.getElementById('total-deposited-display').textContent = ET.ui.formatMoney(u.totalDeposited || 0);
+}
+refreshBalances();
+
+// Service costs table
+const svcs = ET.services.active();
+document.getElementById('service-costs').innerHTML = svcs.map(s => `
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span>${s.icon}</span>
+      <span style="font-size:.85rem">${s.name}</span>
+    </div>
+    <span style="font-family:var(--font-display);font-weight:700;color:var(--gold)">${s.price===0?'FREE':'₦'+s.price.toLocaleString()}</span>
+  </div>`).join('');
+
+// Transaction history
+function renderTx() {
+  const txns = ET.transactions.forUser(ET.auth.current().id);
+  const el   = document.getElementById('tx-history');
+  if (!txns.length) { el.innerHTML = '<div class="empty-state">No transactions yet</div>'; return; }
+  el.innerHTML = txns.slice(0, 20).map(t => `
+    <div class="tx-row">
+      <div class="tx-left">
+        <div class="tx-icon-wrap" style="background:${t.type==='credit'?'var(--green-dim)':'rgba(255,61,61,.1)'}">${t.icon}</div>
+        <div>
+          <div class="tx-name">${t.note || 'Transaction'}</div>
+          <div class="tx-date">${ET.ui.formatDateTime(t.date)}</div>
+        </div>
+      </div>
+      <div class="tx-amount ${t.type}">${t.type==='credit'?'+':'-'}${ET.ui.formatMoney(t.amount)}</div>
+    </div>`).join('');
+}
+renderTx();
+
+function setPreset(val, el) {
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('deposit-amount').value = val;
+}
+
+function doPay() {
+  const amount = parseFloat(document.getElementById('deposit-amount').value);
+  if (!amount || amount < 100) { ET.ui.toast('Minimum deposit is ₦100', 'error'); return; }
+
+  const btn = document.getElementById('pay-btn');
+  btn.disabled = true;
+  btn.textContent = 'Opening Paystack...';
+
+  PaystackHandler.deposit(amount, () => {
+    refreshBalances();
+    renderTx();
+    document.getElementById('deposit-amount').value = '';
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    btn.disabled = false;
+    btn.textContent = 'Pay with Paystack →';
+  });
+
+  // Re-enable if closed
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = 'Pay with Paystack →';
+  }, 3000);
+}
+</script>
+</body>
+</html>

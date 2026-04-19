@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Entropy Tools — Sign In / Register</title>
+<link rel="stylesheet" href="/css/main.css" />
+<link rel="stylesheet" href="/css/animations.css" />
+<style>
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+}
+.auth-left {
+  flex: 1;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+  position: relative;
+  overflow: hidden;
+}
+.auth-left .orb-1 { width: 350px; height: 350px; background: rgba(245,166,35,.06); top: -100px; right: -100px; border-radius:50%; position:absolute; filter:blur(80px); pointer-events:none; }
+.auth-left .orb-2 { width: 250px; height: 250px; background: rgba(0,212,255,.04); bottom: -80px; left: -60px; border-radius:50%; position:absolute; filter:blur(60px); pointer-events:none; }
+.auth-brand { font-family: var(--font-display); font-size: 1.3rem; font-weight: 900; color: var(--gold); letter-spacing: 3px; margin-bottom: 10px; }
+.auth-tagline { font-family: var(--font-mono); font-size: .68rem; color: var(--text3); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 60px; }
+.auth-features { display: flex; flex-direction: column; gap: 20px; max-width: 320px; }
+.auth-feat { display: flex; align-items: center; gap: 14px; }
+.auth-feat-icon { width: 40px; height: 40px; background: var(--gold-dim); border: 1px solid rgba(245,166,35,.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+.auth-feat-text { font-size: .85rem; color: var(--text2); line-height: 1.5; }
+.auth-feat-title { font-weight: 600; color: var(--text); font-size: .88rem; margin-bottom: 2px; }
+
+.auth-right {
+  width: 480px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 48px;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+.auth-card { width: 100%; max-width: 380px; }
+.auth-tabs { display: flex; gap: 4px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 4px; margin-bottom: 32px; }
+.auth-tab { flex: 1; padding: 10px; text-align: center; border-radius: 7px; font-family: var(--font-display); font-size: .65rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all .2s; color: var(--text3); border: none; background: none; }
+.auth-tab.active { background: var(--gold); color: #000; font-weight: 700; }
+
+.form-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; letter-spacing: 1px; margin-bottom: 6px; }
+.form-sub { font-family: var(--font-mono); font-size: .7rem; color: var(--text3); margin-bottom: 28px; }
+.form-stack { display: flex; flex-direction: column; gap: 16px; }
+.form-error { color: var(--red); font-size: .78rem; font-family: var(--font-mono); background: rgba(255,61,61,.08); border: 1px solid rgba(255,61,61,.2); border-radius: 6px; padding: 10px 14px; display: none; }
+.form-error.show { display: block; }
+
+.back-home { position: absolute; top: 24px; left: 24px; color: var(--text3); text-decoration: none; font-size: .78rem; font-family: var(--font-mono); display: flex; align-items: center; gap: 6px; transition: color .2s; }
+.back-home:hover { color: var(--gold); }
+
+.entropy-ring { position:absolute; border-radius:50%; border:1px solid; animation:ringRotate linear infinite; }
+@keyframes ringRotate { to { transform:rotate(360deg); } }
+.ring-a { width:300px;height:300px; border-color:rgba(245,166,35,.06); animation-duration:25s; bottom:-100px; right:-100px; }
+.ring-b { width:180px;height:180px; border-color:rgba(245,166,35,.04); border-style:dashed; animation-duration:18s; animation-direction:reverse; bottom:-50px; right:-50px; }
+
+@media (max-width: 768px) {
+  .auth-left { display: none; }
+  .auth-right { width: 100%; padding: 40px 24px; }
+}
+</style>
+</head>
+<body>
+
+<div id="page-loader">
+  <div class="loader-logo">⚡ ENTROPY TOOLS</div>
+  <div class="loader">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </div>
+  <div class="loader-text">loading auth...</div>
+</div>
+  <div class="loader-text">loading auth...</div>
+</div>
+
+<div class="grid-bg"></div>
+
+<div class="auth-page">
+  <!-- LEFT PANEL -->
+  <div class="auth-left">
+    <div class="orb-1"></div>
+    <div class="orb-2"></div>
+    <div style="text-align:center">
+      <div class="auth-brand">⚡ ENTROPY TOOLS</div>
+      <div class="auth-tagline">professional digital tools</div>
+    </div>
+    <div class="auth-features">
+      <div class="auth-feat fade-up">
+        <div class="auth-feat-icon">💳</div>
+        <div>
+          <div class="auth-feat-title">Wallet System</div>
+          <div class="auth-feat-text">Deposit via Paystack, spend on tools</div>
+        </div>
+      </div>
+      <div class="auth-feat fade-up">
+        <div class="auth-feat-icon">📊</div>
+        <div>
+          <div class="auth-feat-title">Trading Tools</div>
+          <div class="auth-feat-text">Generate positions & receipts instantly</div>
+        </div>
+      </div>
+      <div class="auth-feat fade-up">
+        <div class="auth-feat-icon">🔗</div>
+        <div>
+          <div class="auth-feat-title">Shareable Links</div>
+          <div class="auth-feat-text">Every output gets a unique view link</div>
+        </div>
+      </div>
+      <div class="auth-feat fade-up">
+        <div class="auth-feat-icon">🛡️</div>
+        <div>
+          <div class="auth-feat-title">Secure & Fast</div>
+          <div class="auth-feat-text">Bank-grade security via Paystack</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="auth-right">
+    <a href="/index.html" class="back-home">← Back to Home</a>
+    <div class="entropy-ring ring-a"></div>
+    <div class="entropy-ring ring-b"></div>
+
+    <div class="auth-card">
+      <!-- TABS -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Register</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="form-login">
+        <div class="form-title">Welcome Back</div>
+        <div class="form-sub">// sign_in to your account</div>
+        <div id="login-error" class="form-error"></div>
+        <div class="form-stack">
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input class="form-input" type="email" id="login-email" placeholder="you@example.com" autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input class="form-input" type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+          </div>
+          <button class="btn btn-gold btn-full" id="login-btn" onclick="doLogin()" style="margin-top:8px"><span class="blob1"></span><span class="inner">Sign In →</span></button>
+        </div>
+        <div style="text-align:center;margin-top:20px;font-size:.78rem;color:var(--text3)">
+          No account? <a href="#" onclick="switchTab('register')" style="color:var(--gold);text-decoration:none">Register here</a>
+        </div>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="form-register" style="display:none">
+        <div class="form-title">Create Account</div>
+        <div class="form-sub">// register_new_user</div>
+        <div id="register-error" class="form-error"></div>
+        <div class="form-stack">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input class="form-input" type="text" id="reg-name" placeholder="John Doe" autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input class="form-input" type="email" id="reg-email" placeholder="you@example.com" autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input class="form-input" type="password" id="reg-password" placeholder="Min. 8 characters" autocomplete="new-password" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm Password</label>
+            <input class="form-input" type="password" id="reg-confirm" placeholder="Repeat password" />
+          </div>
+          <button class="btn btn-gold btn-full" id="register-btn" onclick="doRegister()" style="margin-top:8px"><span class="blob1"></span><span class="inner">Create Account →</span></button>
+        </div>
+        <div style="text-align:center;margin-top:20px;font-size:.78rem;color:var(--text3)">
+          Already have an account? <a href="#" onclick="switchTab('login')" style="color:var(--gold);text-decoration:none">Sign in</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+// ── AUTH PAGE LOGIC ──
+
+// Redirect if already logged in
+if (ET.auth.isLoggedIn()) {
+  const u = ET.auth.current();
+  window.location.href = u.role === 'admin' ? '/admin.html' : '/dashboard.html';
+}
+
+// Check URL param for initial tab
+const urlMode = new URLSearchParams(location.search).get('mode');
+if (urlMode === 'register') switchTab('register');
+
+function switchTab(tab) {
+  document.getElementById('form-login').style.display    = tab === 'login' ? '' : 'none';
+  document.getElementById('form-register').style.display = tab === 'register' ? '' : 'none';
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+}
+
+function doLogin() {
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl    = document.getElementById('login-error');
+  const btn      = document.getElementById('login-btn');
+
+  if (!email || !password) { showErr(errEl, 'Please fill in all fields.'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Signing in...';
+
+  setTimeout(() => {
+    const result = ET.auth.login(email, password);
+    if (!result.ok) {
+      showErr(errEl, result.msg);
+      btn.disabled = false;
+      btn.textContent = 'Sign In →';
+      return;
+    }
+    btn.textContent = '✓ Success!';
+    setTimeout(() => {
+      const u = result.user;
+      window.location.href = u.role === 'admin' ? '/admin.html' : '/dashboard.html';
+    }, 500);
+  }, 600);
+}
+
+function doRegister() {
+  const name     = document.getElementById('reg-name').value.trim();
+  const email    = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const confirm  = document.getElementById('reg-confirm').value;
+  const errEl    = document.getElementById('register-error');
+  const btn      = document.getElementById('register-btn');
+
+  if (!name || !email || !password) { showErr(errEl, 'Please fill in all fields.'); return; }
+  if (password.length < 8) { showErr(errEl, 'Password must be at least 8 characters.'); return; }
+  if (password !== confirm) { showErr(errEl, 'Passwords do not match.'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Creating account...';
+
+  setTimeout(() => {
+    const result = ET.auth.register(name, email, password);
+    if (!result.ok) {
+      showErr(errEl, result.msg);
+      btn.disabled = false;
+      btn.textContent = 'Create Account →';
+      return;
+    }
+    btn.textContent = '✓ Account created!';
+    setTimeout(() => window.location.href = '/dashboard.html', 600);
+  }, 700);
+}
+
+function showErr(el, msg) {
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 5000);
+}
+
+// Enter key handlers
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (document.getElementById('form-login').style.display !== 'none') doLogin();
+  else doRegister();
+});
+</script>
+</body>
+</html>
