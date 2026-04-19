@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tool Launcher — Entropy Tools</title>
+<link rel="stylesheet" href="/css/main.css" />
+<link rel="stylesheet" href="/css/animations.css" />
+<style>
+body { overflow: hidden; }
+.launcher-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 52px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 100;
+}
+.launcher-info { display: flex; align-items: center; gap: 12px; }
+.launcher-icon { width: 32px; height: 32px; background: var(--gold-dim); border: 1px solid rgba(245,166,35,.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: .95rem; }
+.launcher-name { font-family: var(--font-display); font-size: .82rem; font-weight: 700; letter-spacing: 1px; }
+.launcher-sub { font-family: var(--font-mono); font-size: .62rem; color: var(--text3); margin-top: 2px; }
+.launcher-actions { display: flex; align-items: center; gap: 8px; }
+
+.frame-container {
+  position: fixed;
+  top: 52px; left: 0; right: 0; bottom: 0;
+}
+.frame-container iframe {
+  width: 100%; height: 100%;
+  border: none;
+  background: #fff;
+}
+.frame-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  background: var(--bg);
+  z-index: 10;
+  transition: opacity .4s ease;
+}
+.frame-loading.hidden { opacity: 0; pointer-events: none; display: none; }
+
+/* ── GENERATION ANIMATION (uiverse.io by dexter-st) — gold-themed ── */
+.gen-loader-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  height: 180px;
+  font-family: var(--font-display);
+  font-size: 1em;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--gold);
+  border-radius: 50%;
+  background-color: transparent;
+  user-select: none;
+}
+
+.gen-loader {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background-color: transparent;
+  animation: gen-loader-rotate 2s linear infinite;
+  z-index: 0;
+}
+
+@keyframes gen-loader-rotate {
+  0% {
+    transform: rotate(90deg);
+    box-shadow:
+      0 10px 20px 0 rgba(245,202,90,.9) inset,
+      0 20px 30px 0 rgba(245,166,35,.7) inset,
+      0 60px 60px 0 rgba(120,70,0,.8) inset;
+  }
+  50% {
+    transform: rotate(270deg);
+    box-shadow:
+      0 10px 20px 0 rgba(255,255,255,.8) inset,
+      0 20px 10px 0 rgba(245,166,35,.9) inset,
+      0 40px 60px 0 rgba(80,40,0,.9) inset;
+  }
+  100% {
+    transform: rotate(450deg);
+    box-shadow:
+      0 10px 20px 0 rgba(245,202,90,.9) inset,
+      0 20px 30px 0 rgba(245,166,35,.7) inset,
+      0 60px 60px 0 rgba(120,70,0,.8) inset;
+  }
+}
+
+.gen-loader-letter {
+  display: inline-block;
+  opacity: 0.4;
+  transform: translateY(0);
+  animation: gen-letter-anim 2s infinite;
+  z-index: 1;
+  border-radius: 50ch;
+  border: none;
+  font-family: var(--font-display);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--gold);
+}
+.gen-loader-letter:nth-child(1)  { animation-delay: 0s; }
+.gen-loader-letter:nth-child(2)  { animation-delay: .1s; }
+.gen-loader-letter:nth-child(3)  { animation-delay: .2s; }
+.gen-loader-letter:nth-child(4)  { animation-delay: .3s; }
+.gen-loader-letter:nth-child(5)  { animation-delay: .4s; }
+.gen-loader-letter:nth-child(6)  { animation-delay: .5s; }
+.gen-loader-letter:nth-child(7)  { animation-delay: .6s; }
+.gen-loader-letter:nth-child(8)  { animation-delay: .7s; }
+.gen-loader-letter:nth-child(9)  { animation-delay: .8s; }
+.gen-loader-letter:nth-child(10) { animation-delay: .9s; }
+
+@keyframes gen-letter-anim {
+  0%, 100% { opacity: 0.4; transform: translateY(0); }
+  20%       { opacity: 1;   transform: scale(1.2); text-shadow: 0 0 10px var(--gold-glow); }
+  40%       { opacity: 0.7; transform: translateY(0); }
+}
+
+/* sub-label under the ring */
+.gen-loader-sub {
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+  animation: blink 1.4s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<!-- TOP BAR -->
+<div class="launcher-bar">
+  <div class="launcher-info">
+    <div class="launcher-icon" id="tool-icon">⚡</div>
+    <div>
+      <div class="launcher-name" id="tool-name">Loading Tool...</div>
+      <div class="launcher-sub" id="tool-sub">// entropy_tools</div>
+    </div>
+    <span class="badge badge-gold" id="tool-cat">—</span>
+  </div>
+  <div class="launcher-actions">
+    <button class="btn btn-ghost btn-sm" id="download-btn" onclick="doDownload()"><span class="blob1"></span><span class="inner">↓ Download</span></button>
+    <button class="btn btn-outline btn-sm" id="copy-link-btn" onclick="copyLink()"><span class="blob1"></span><span class="inner">🔗 Copy Link</span></button>
+    <a href="/services.html" class="btn btn-ghost btn-sm"><span class="blob1"></span><span class="inner">← Back</span></a>
+    <a href="/dashboard.html" class="btn btn-gold btn-sm"><span class="blob1"></span><span class="inner">Dashboard</span></a>
+  </div>
+</div>
+
+<!-- FRAME -->
+<div class="frame-container">
+  <div class="frame-loading" id="frame-loading">
+
+    <!-- Service name shown above ring -->
+    <div style="font-family:var(--font-display);font-size:.75rem;font-weight:700;color:var(--text3);letter-spacing:3px;text-transform:uppercase" id="loading-name">Loading...</div>
+
+    <!-- Generation ring animation -->
+    <div class="gen-loader-wrap">
+      <div class="gen-loader"></div>
+      <!-- Letters spell "GENERATING" -->
+      <span class="gen-loader-letter">G</span>
+      <span class="gen-loader-letter">E</span>
+      <span class="gen-loader-letter">N</span>
+      <span class="gen-loader-letter">E</span>
+      <span class="gen-loader-letter">R</span>
+      <span class="gen-loader-letter">A</span>
+      <span class="gen-loader-letter">T</span>
+      <span class="gen-loader-letter">I</span>
+      <span class="gen-loader-letter">N</span>
+      <span class="gen-loader-letter">G</span>
+    </div>
+
+    <!-- Blinking status text -->
+    <div class="gen-loader-sub" id="loading-sub">initializing tool...</div>
+
+  </div>
+  <iframe id="tool-frame" src="" onload="frameLoaded()"></iframe>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/services.js"></script>
+<script>
+if (!ET.ui.requireAuth()) { /* redirect */ }
+
+const params = new URLSearchParams(location.search);
+const serviceId = params.get('id');
+const genId     = params.get('gen');
+
+const service = ET.services.get(serviceId);
+const gen     = genId ? ET.generations.get(genId) : null;
+
+if (!service) {
+  document.getElementById('loading-name').textContent = 'Service Not Found';
+  document.getElementById('loading-sub').textContent  = 'Redirecting...';
+  setTimeout(() => window.location.href = '/services.html', 2000);
+} else {
+  // Fill bar
+  document.title = service.name + ' — Entropy Tools';
+  document.getElementById('tool-icon').textContent   = service.icon;
+  document.getElementById('tool-name').textContent   = service.name;
+  document.getElementById('tool-sub').textContent    = '// ' + service.id;
+  document.getElementById('tool-cat').textContent    = service.category;
+  document.getElementById('loading-name').textContent = service.icon + ' ' + service.name;
+  document.getElementById('loading-sub').textContent  = 'Loading from repository...';
+
+  // Load iframe
+  document.getElementById('tool-frame').src = service.repo;
+}
+
+function frameLoaded() {
+  document.getElementById('frame-loading').classList.add('hidden');
+}
+
+function copyLink() {
+  const link = gen ? gen.viewLink : (window.location.href);
+  navigator.clipboard.writeText(link).then(() => {
+    ET.ui.toast('View link copied to clipboard!', 'success');
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = link;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    ET.ui.toast('Link copied!', 'success');
+  });
+}
+
+function doDownload() {
+  if (gen) {
+    ServicesHandler.downloadGen(genId);
+  } else if (service) {
+    const content = `ENTROPY TOOLS — Tool Launch Record
+====================================
+Service:   ${service.name}
+Category:  ${service.category}
+Source:    ${service.repo}
+Launched:  ${new Date().toLocaleString()}
+====================================
+Entropy Tools — ${window.location.origin}
+`;
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `entropy-${service.id}-${Date.now()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    ET.ui.toast('Downloaded!', 'success');
+  }
+}
+</script>
+</body>
+</html>

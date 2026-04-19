@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Services — Entropy Tools</title>
+<link rel="stylesheet" href="/css/main.css" />
+<link rel="stylesheet" href="/css/animations.css" />
+<style>
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 22px;
+}
+.service-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  transition: all .3s;
+  position: relative;
+  overflow: hidden;
+}
+.service-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity .3s;
+}
+.service-card:hover { border-color: rgba(245,166,35,.3); transform: translateY(-5px); box-shadow: 0 24px 60px rgba(0,0,0,.4); }
+.service-card:hover::after { opacity: 1; }
+.service-disabled { opacity: .5; pointer-events: none; }
+
+.service-icon-wrap {
+  width: 60px; height: 60px;
+  background: var(--gold-dim);
+  border: 1px solid rgba(245,166,35,.2);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+.service-name { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 10px; }
+.service-desc { font-size: .88rem; color: var(--text2); line-height: 1.7; flex: 1; margin-bottom: 24px; }
+.service-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.service-price {
+  display: flex;
+  flex-direction: column;
+}
+.price-val { font-family: var(--font-display); font-size: 1.3rem; font-weight: 900; color: var(--gold); }
+.price-per { font-family: var(--font-mono); font-size: .6rem; color: var(--text3); }
+.service-actions { display: flex; gap: 8px; }
+
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.filter-btn {
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  padding: 7px 16px;
+  border-radius: 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text3);
+  cursor: pointer;
+  transition: all .2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.filter-btn:hover, .filter-btn.active { background: var(--gold-dim); border-color: rgba(245,166,35,.4); color: var(--gold); }
+
+.low-balance-banner {
+  background: rgba(255,107,53,.08);
+  border: 1px solid rgba(255,107,53,.3);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.lbb-text { font-size: .85rem; color: #ff6b35; }
+</style>
+</head>
+<body>
+<div id="page-loader">
+  <div class="loader-logo">⚡ ENTROPY TOOLS</div>
+  <div class="loader">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </div>
+  <div class="loader-text">loading services...</div>
+</div>
+  <div class="loader-text">loading services...</div>
+</div>
+<div class="grid-bg"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="/index.html" class="nav-logo"><div class="logo-icon">⚡</div>ENTROPY TOOLS</a>
+  <ul class="nav-links">
+    <li><a href="/dashboard.html">Dashboard</a></li>
+    <li><a href="/services.html" class="active">Services</a></li>
+    <li><a href="/deposit.html">Deposit</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="balance-pill" onclick="window.location.href='/deposit.html'">
+      <div class="pulse"></div>
+      <span id="nav-balance-val">₦0.00</span>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="ET.auth.logout()"><span class="blob1"></span><span class="inner">Sign Out</span></button>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section" style="margin-bottom:20px">
+        <div style="padding:0 12px 16px;border-bottom:1px solid var(--border)">
+          <div style="font-family:var(--font-display);font-size:.75rem;font-weight:700;color:var(--text)" id="sidebar-name">Loading...</div>
+          <div style="font-family:var(--font-mono);font-size:.62rem;color:var(--text3);margin-top:2px" id="sidebar-email"></div>
+          <div style="margin-top:8px"><span class="badge badge-cyan">User</span></div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Navigation</div>
+        <a href="/dashboard.html" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+        <a href="/services.html" class="sidebar-link active"><span class="icon">⚡</span> Services</a>
+        <a href="/deposit.html" class="sidebar-link"><span class="icon">💳</span> Deposit</a>
+      </div>
+      <div class="sidebar-section" style="margin-top:16px">
+        <!-- Balance card in sidebar -->
+        <div style="background:var(--gold-dim);border:1px solid rgba(245,166,35,.2);border-radius:10px;padding:14px;margin:0 0 8px">
+          <div style="font-family:var(--font-mono);font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Balance</div>
+          <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;color:var(--gold)" id="sidebar-balance">₦0.00</div>
+          <a href="/deposit.html" class="btn btn-gold btn-sm btn-full" style="margin-top:10px"><span class="blob1"></span><span class="inner">+ Deposit</span></a>
+        </div>
+      </div>
+      <div class="sidebar-section" style="margin-top:8px">
+        <div class="sidebar-label">Account</div>
+        <button class="sidebar-link" onclick="ET.auth.logout()"><span class="icon">🚪</span> Sign Out</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <!-- Page Header -->
+      <div style="margin-bottom:32px">
+        <div class="hero-eyebrow" style="display:inline-flex;align-items:center;gap:8px;background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);color:var(--gold);border-radius:20px;padding:5px 16px;font-family:var(--font-mono);font-size:.65rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">
+          ⚡ Available Services
+        </div>
+        <h1 style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;letter-spacing:-1px">Tools & <span style="color:var(--gold)">Services</span></h1>
+        <p style="color:var(--text3);font-size:.88rem;margin-top:6px;font-family:var(--font-mono)">// select_a_service to launch</p>
+      </div>
+
+      <!-- Low balance banner (shown if balance < min price) -->
+      <div id="low-balance-banner" style="display:none" class="low-balance-banner">
+        <div class="lbb-text">⚠️ Your balance may be too low for some services. <strong>Deposit funds to continue.</strong></div>
+        <a href="/deposit.html" class="btn btn-gold btn-sm" style="flex-shrink:0"><span class="blob1"></span><span class="inner">Deposit Now →</span></a>
+      </div>
+
+      <!-- FILTER BAR -->
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterServices('all', this)"><span class="blob1"></span><span class="inner">All</span></button>
+        <button class="filter-btn" onclick="filterServices('Trading', this)"><span class="blob1"></span><span class="inner">Trading</span></button>
+        <button class="filter-btn" onclick="filterServices('Crypto', this)"><span class="blob1"></span><span class="inner">Crypto</span></button>
+        <button class="filter-btn" onclick="filterServices('Site Builder', this)"><span class="blob1"></span><span class="inner">Site Builder</span></button>
+      </div>
+
+      <!-- SERVICES GRID -->
+      <div class="services-grid" id="services-grid">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- GENERATIONS HISTORY -->
+      <div style="margin-top:48px">
+        <div class="section-head">
+          <div>
+            <div class="section-title">Your <span class="accent">Generations</span></div>
+            <div class="section-sub">// generation_history with download & view links</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Reference</th>
+                <th>Service</th>
+                <th>Date</th>
+                <th>Cost</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="gen-tbody">
+              <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3);font-family:var(--font-mono)">No generations yet — launch a tool to get started</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/services.js"></script>
+<script>
+if (!ET.ui.requireAuth()) { /* redirect */ }
+
+const user = ET.auth.current();
+document.getElementById('sidebar-name').textContent  = user.name;
+document.getElementById('sidebar-email').textContent = user.email;
+document.getElementById('sidebar-balance').textContent = ET.ui.formatMoney(user.balance || 0);
+
+let allServices = ET.services.active();
+
+// Low balance check
+const minPrice = Math.min(...allServices.filter(s=>s.price>0).map(s=>s.price));
+if ((user.balance || 0) < minPrice) {
+  document.getElementById('low-balance-banner').style.display = 'flex';
+}
+
+function renderServices(svcs) {
+  const grid = document.getElementById('services-grid');
+  if (!svcs.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text3);font-family:var(--font-mono)">No services in this category</div>`;
+    return;
+  }
+  grid.innerHTML = svcs.map(s => {
+    const canAfford = s.price === 0 || (user.balance || 0) >= s.price;
+    return `
+      <div class="service-card fade-up ${!s.active?'service-disabled':''}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+          <div class="service-icon-wrap">${s.icon}</div>
+          <span class="badge badge-gold">${s.category}</span>
+        </div>
+        <div class="service-name">${s.name}</div>
+        <div class="service-desc">${s.desc}</div>
+        <div class="service-footer">
+          <div class="service-price">
+            <div class="price-val">${s.price===0?'FREE':'₦'+s.price.toLocaleString()}</div>
+            <div class="price-per">per use</div>
+          </div>
+          <div class="service-actions">
+            <a href="${s.githubRepo}" target="_blank" class="btn btn-ghost btn-sm" title="Source"><span class="blob1"></span><span class="inner">⌥</span></a>
+            <button class="btn ${canAfford?'btn-gold':'btn-danger'} btn-sm" onclick="ServicesHandler.launch('${s.id}')"><span class="blob1"></span><span class="inner">${canAfford ? 'Launch →' : 'Low Balance'}</span></button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function filterServices(cat, el) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const filtered = cat === 'all' ? allServices : allServices.filter(s => s.category === cat);
+  renderServices(filtered);
+}
+
+renderServices(allServices);
+
+// Generations
+const gens = ET.generations.forUser(user.id);
+ServicesHandler.renderGenerations('gen-tbody', gens);
+</script>
+</body>
+</html>

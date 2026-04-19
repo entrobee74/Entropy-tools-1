@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Entropy Tools — Professional Digital Tools</title>
+<meta name="description" content="Access professional trading, crypto, and site-building tools. Pay as you go with our secure wallet system." />
+<link rel="stylesheet" href="/css/main.css" />
+<link rel="stylesheet" href="/css/animations.css" />
+<style>
+/* ── LANDING SPECIFIC ── */
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 40px 80px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(245,166,35,.08);
+  border: 1px solid rgba(245,166,35,.2);
+  color: var(--gold);
+  border-radius: 20px;
+  padding: 6px 18px;
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  animation: fadeUp .6s ease forwards;
+}
+.hero-h1 {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 24px;
+  animation: fadeUp .7s .05s ease both;
+}
+.hero-h1 .line2 {
+  display: block;
+  color: var(--gold);
+  -webkit-text-stroke: 1px var(--gold);
+}
+.hero-sub {
+  font-size: 1.1rem;
+  color: var(--text2);
+  max-width: 540px;
+  margin: 0 auto 48px;
+  line-height: 1.7;
+  animation: fadeUp .7s .1s ease both;
+}
+.hero-cta {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeUp .7s .15s ease both;
+}
+
+/* ── GLOW ORBS ── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+.orb-1 { width: 400px; height: 400px; background: rgba(245,166,35,.06); top: -100px; right: -100px; }
+.orb-2 { width: 300px; height: 300px; background: rgba(0,212,255,.04); bottom: -50px; left: -80px; }
+.orb-3 { width: 200px; height: 200px; background: rgba(245,166,35,.05); top: 40%; left: 10%; }
+
+/* ── STATS STRIP ── */
+.stats-strip {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 28px 40px;
+  position: relative;
+  z-index: 1;
+}
+.strip-stat {
+  flex: 1;
+  max-width: 200px;
+  text-align: center;
+  padding: 0 20px;
+  border-right: 1px solid var(--border);
+}
+.strip-stat:last-child { border-right: none; }
+.strip-val {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+}
+.strip-lbl {
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 6px;
+}
+
+/* ── FEATURES SECTION ── */
+.features-section {
+  padding: 100px 40px;
+  position: relative;
+  z-index: 1;
+}
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.feature-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  transition: all .3s;
+  position: relative;
+  overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity .3s;
+}
+.feature-card:hover { border-color: rgba(245,166,35,.25); transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,.4); }
+.feature-card:hover::before { opacity: 1; }
+.feat-icon { font-size: 2rem; margin-bottom: 16px; }
+.feat-name { font-family: var(--font-display); font-size: .9rem; font-weight: 700; letter-spacing: 1px; margin-bottom: 10px; }
+.feat-desc { font-size: .88rem; color: var(--text3); line-height: 1.7; }
+
+/* ── TOOLS PREVIEW ── */
+.tools-section {
+  padding: 0 40px 100px;
+  position: relative;
+  z-index: 1;
+}
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.tool-preview-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  transition: all .3s;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.tool-preview-card:hover { border-color: rgba(245,166,35,.3); transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,.4); }
+
+/* ── HOW IT WORKS ── */
+.how-section {
+  padding: 100px 40px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
+}
+.steps { display: flex; gap: 0; max-width: 900px; margin: 48px auto 0; position: relative; }
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 28px; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border2), var(--gold-dim), var(--border2), transparent);
+}
+.step { flex: 1; text-align: center; padding: 0 20px; }
+.step-num {
+  width: 56px; height: 56px;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--gold);
+  background: var(--bg);
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 20px var(--gold-glow);
+}
+.step-title { font-family: var(--font-display); font-size: .82rem; letter-spacing: 1px; margin-bottom: 10px; }
+.step-desc { font-size: .82rem; color: var(--text3); line-height: 1.6; }
+
+/* ── CTA SECTION ── */
+.cta-section {
+  padding: 120px 40px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+.cta-section .orb { opacity: .7; }
+.cta-h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: -1px;
+  margin-bottom: 20px;
+}
+.cta-h2 span { color: var(--gold); }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 40px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+.footer-logo {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+.footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 20px; }
+.footer-links a { color: var(--text3); text-decoration: none; font-size: .82rem; transition: color .2s; }
+.footer-links a:hover { color: var(--gold); }
+.footer-copy { font-family: var(--font-mono); font-size: .65rem; color: var(--text3); }
+</style>
+</head>
+<body>
+
+<!-- PAGE LOADER -->
+<div id="page-loader">
+  <div class="loader-logo">⚡ ENTROPY TOOLS</div>
+  <div class="loader">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </div>
+  <div class="loader-text">initializing systems...</div>
+</div>
+
+<!-- GRID BG -->
+<div class="grid-bg"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="/index.html" class="nav-logo">
+    <div class="logo-icon">⚡</div>
+    ENTROPY TOOLS
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#tools">Services</a></li>
+    <li><a href="#how">How It Works</a></li>
+  </ul>
+  <div class="nav-right" id="nav-right">
+    <!-- Filled by JS -->
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero-section">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="entropy-ring ring-3"></div>
+  <div class="entropy-ring ring-1"></div>
+  <div class="entropy-ring ring-2"></div>
+
+  <div class="hero-eyebrow">
+    <span class="glow-dot"></span>
+    Professional Digital Tools — Pay As You Go
+  </div>
+  <h1 class="hero-h1">
+    Your Tools.
+    <span class="line2">Amplified.</span>
+  </h1>
+  <p class="hero-sub">
+    Generate trading positions, crypto receipts, support centers, and more — all in one platform with a simple credit wallet.
+  </p>
+  <div class="hero-cta">
+    <a href="/auth.html?mode=register" class="btn btn-gold btn-lg btn-pulse"><span class="blob1"></span><span class="inner">Get Started Free →</span></a>
+    <a href="#tools" class="btn btn-outline btn-lg"><span class="blob1"></span><span class="inner">View Services</span></a>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="strip-stat"><div class="strip-val">3+</div><div class="strip-lbl">Pro Tools</div></div>
+  <div class="strip-stat"><div class="strip-val">₦100</div><div class="strip-lbl">Min Deposit</div></div>
+  <div class="strip-stat"><div class="strip-val">100%</div><div class="strip-lbl">Secure Payments</div></div>
+  <div class="strip-stat"><div class="strip-val">24/7</div><div class="strip-lbl">Always Online</div></div>
+</div>
+
+<!-- FEATURES -->
+<section class="features-section" id="features">
+  <div style="text-align:center;margin-bottom:60px">
+    <div class="hero-eyebrow" style="margin:0 auto 20px">Platform Features</div>
+    <h2 style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;letter-spacing:-1px">Built for Professionals</h2>
+    <p style="color:var(--text3);margin-top:12px;max-width:480px;margin-left:auto;margin-right:auto;font-size:.9rem;line-height:1.7">Everything you need in one powerful platform, backed by a secure wallet system.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card fade-up">
+      <div class="feat-icon">💳</div>
+      <div class="feat-name">Wallet System</div>
+      <div class="feat-desc">Deposit funds via Paystack and spend across all tools. Real-time balance tracking with full transaction history.</div>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feat-icon">⚡</div>
+      <div class="feat-name">Instant Generation</div>
+      <div class="feat-desc">Launch any tool in seconds. Generate professional outputs instantly — trading positions, receipts, and sites.</div>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feat-icon">🔗</div>
+      <div class="feat-name">Shareable Links</div>
+      <div class="feat-desc">Every generation comes with a unique view link you can share. Download your outputs anytime.</div>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feat-icon">🔒</div>
+      <div class="feat-name">Secure Payments</div>
+      <div class="feat-desc">All payments processed through Paystack's bank-grade encryption. Your funds are always safe.</div>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feat-icon">📊</div>
+      <div class="feat-name">Full Dashboard</div>
+      <div class="feat-desc">Track your usage, spending, and generation history from a clean, powerful dashboard.</div>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feat-icon">🛡️</div>
+      <div class="feat-name">Admin Control</div>
+      <div class="feat-desc">Administrators can manage pricing, users, and services in real-time from the admin panel.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS PREVIEW -->
+<section class="tools-section" id="tools">
+  <div style="text-align:center;margin-bottom:60px">
+    <div class="hero-eyebrow" style="margin:0 auto 20px">Available Services</div>
+    <h2 style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;letter-spacing:-1px">What You Can Build</h2>
+  </div>
+  <div class="tools-grid" id="landing-tools-grid">
+    <!-- Rendered by JS -->
+  </div>
+  <div style="text-align:center;margin-top:48px">
+    <a href="/auth.html?mode=register" class="btn btn-gold btn-lg"><span class="blob1"></span><span class="inner">Access All Tools →</span></a>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div style="text-align:center">
+    <div class="hero-eyebrow" style="margin:0 auto 20px">Process</div>
+    <h2 style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;letter-spacing:-1px">Get Started in Minutes</h2>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title">Create Account</div>
+      <div class="step-desc">Register in seconds with your name and email.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title">Fund Wallet</div>
+      <div class="step-desc">Deposit via Paystack from ₦100 minimum.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-title">Launch Tools</div>
+      <div class="step-desc">Access any service instantly with your balance.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-title">Download & Share</div>
+      <div class="step-desc">Get your generation with a shareable view link.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="orb orb-1" style="top:auto;bottom:-100px;right:-100px;opacity:.7"></div>
+  <h2 class="cta-h2">Ready to <span>Get Started?</span></h2>
+  <p style="color:var(--text3);max-width:400px;margin:0 auto 40px;font-size:.92rem;line-height:1.7">Join now and access professional tools with your first deposit.</p>
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+    <a href="/auth.html?mode=register" class="btn btn-gold btn-lg btn-pulse"><span class="blob1"></span><span class="inner">Create Free Account →</span></a>
+    <a href="/auth.html" class="btn btn-ghost btn-lg"><span class="blob1"></span><span class="inner">Sign In</span></a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">⚡ ENTROPY TOOLS</div>
+  <div class="footer-links">
+    <a href="/auth.html">Login</a>
+    <a href="/auth.html?mode=register">Register</a>
+    <a href="#tools">Services</a>
+    <a href="#how">How It Works</a>
+  </div>
+  <div class="footer-copy">© 2025 Entropy Tools. All rights reserved. Powered by Paystack.</div>
+</footer>
+
+<script src="/js/app.js"></script>
+<script>
+// ── LANDING PAGE INIT ──
+(function() {
+  // Nav right: show login/register or dashboard link
+  const navRight = document.getElementById('nav-right');
+  if (ET.auth.isLoggedIn()) {
+    const u = ET.auth.current();
+    navRight.innerHTML = `
+      <a href="${u.role === 'admin' ? '/admin.html' : '/dashboard.html'}" class="btn btn-gold"><span class="blob1"></span><span class="inner">Dashboard →</span></a>`;
+  } else {
+    navRight.innerHTML = `
+      <a href="/auth.html" class="btn btn-ghost"><span class="blob1"></span><span class="inner">Sign In</span></a>
+      <a href="/auth.html?mode=register" class="btn btn-gold"><span class="blob1"></span><span class="inner">Get Started →</span></a>`;
+  }
+
+  // Render landing tools
+  const svcs = ET.services.active();
+  const grid = document.getElementById('landing-tools-grid');
+  grid.innerHTML = svcs.map(s => `
+    <a href="/auth.html?mode=register" class="tool-preview-card fade-up">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px">
+        <div style="width:52px;height:52px;background:var(--gold-dim);border:1px solid rgba(245,166,35,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.6rem">${s.icon}</div>
+        <span class="badge badge-gold">${s.category}</span>
+      </div>
+      <div style="font-family:var(--font-display);font-weight:700;letter-spacing:1px;margin-bottom:10px">${s.name}</div>
+      <div style="color:var(--text3);font-size:.85rem;line-height:1.7;margin-bottom:20px">${s.desc}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid var(--border)">
+        <span style="font-family:var(--font-display);font-weight:700;color:var(--gold);font-size:1.1rem">₦${s.price.toLocaleString()}<span style="font-size:.62rem;color:var(--text3);font-weight:400"> /use</span></span>
+        <span class="btn btn-gold btn-sm">Launch →</span>
+      </div>
+    </a>`).join('');
+})();
+</script>
+</body>
+</html>
